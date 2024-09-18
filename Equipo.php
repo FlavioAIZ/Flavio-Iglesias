@@ -1,6 +1,6 @@
 <?php
 
-class equipo {
+class Equipo {
     private $nombreEq;
     private $ciudadEq;
     private $partidosJugEq;

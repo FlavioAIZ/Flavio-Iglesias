@@ -1,5 +1,5 @@
 ><?php 
-class jugador {
+class Jugador {
     private $dni;
     private $nombre;
     private $altura;
