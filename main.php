@@ -1,10 +1,9 @@
 <?php
 
-    require("./Jugador.php");
+    require("./Jugador.php") ;
     require("./Equipo.php");
-
     $ruta = "./2024-TR-jugadores.csv";
-	$recurso = fopen( $ruta, "r" );
+    $recurso = fopen( $ruta, "r" );
         $jugadores=[];
 
 	    while (!feof($recurso))
@@ -46,7 +45,73 @@
         }
         return $jugadoresMasAltos;
     }
+
+    function EquipoMasGanador($equipos) :array
+    {
+        $maxPartidosGanados = 0;
+        $equiposMasGanadores = [];
+    
+        foreach ($equipos as $equipo)
+        {
+            if ($equipo->partidosGanadosEquipo() > $maxPartidosGanados) 
+            {
+                $maxPartidosGanados = $equipo->partidosGanadosEquipo();
+                $equiposMasGanadores = [$equipo->nombreEquipo()];
+            } 
+            elseif ($equipo->partidosGanadosEquipo() === $maxPartidosGanados)
+            {
+                $equiposMasGanadores[] = $equipo->nombreEquipo();
+            }
+        }
+        return $equiposMasGanadores;
+    }
+
+    function jugadoresMasPuntos($jugadores):array
+    {
+        usort($jugadores, function($a, $b) 
+            {
+                return $b->puntosTotalesJugador() <=> $a->puntosTotalesJugador();
+            }
+        );
+        $jMP=[];
+        $jMP=array_slice($jugadores,0,10);
+        return $jMP;
+    }
+   
+
+
+
+
+
+
+
+
+
     $masalto=[];
     $masAlto=JugadorMasAlto($jugadores);
-    echo "El jugador mas alto es: ".$masAlto[0],""
+    $rep=count($masAlto);
+    for ($i = 0; $i < $rep; $i++)
+    {
+        echo "\nEl jugador mas alto es: ".$masAlto[0],"\n\n";
+    }
+    
+    $masGanador=[];
+    $masGanador=EquipoMasGanador($equipos);
+    $rep=count($masGanador);
+    $cuenta=0;
+    for ($i = 0; $i < $rep; $i++);
+    {
+        echo "El equipo mas ganador es: ".$masGanador[$cuenta]."\n\n";
+        $cuenta++;
+    }
+
+    $masPuntos=[];
+    $masPuntos=jugadoresMasPuntos($jugadores);
+    $rep=count($masPuntos);
+    $cuenta=0;
+    while ($cuenta < $rep)
+    {
+        echo "Jugador: ".$masPuntos[$cuenta]->nombreJugador()."--> Puntaje Total: ".$masPuntos[$cuenta]->puntosTotalesJugador()."\n";
+        $cuenta++;
+    }
 ?>
