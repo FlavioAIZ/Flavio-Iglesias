@@ -2,6 +2,7 @@
 
     require("./Jugador.php") ;
     require("./Equipo.php");
+
     $ruta = "./2024-TR-jugadores.csv";
     $recurso = fopen( $ruta, "r" );
         $jugadores=[];
@@ -30,10 +31,10 @@
     {
         $maxAltura = 0;
         $jugadoresMasAltos = [];
-    
+
         foreach ($jugadores as $jugador)
         {
-            if ($jugador->alturaJugador() > $maxAltura) 
+            if ($jugador->alturaJugador()>$maxAltura) 
             {
                 $maxAltura = $jugador->alturaJugador();
                 $jugadoresMasAltos = [$jugador->nombreJugador()];
@@ -78,15 +79,38 @@
         return $jMP;
     }
    
+    function ordenarJugadoresPorEquipo($jugadores) :array
+    {
+        $jugadoresPorEquipo=$jugadores;
+        usort($jugadoresPorEquipo, function($a, $b) 
+            {
+                return $b->equipoJugador() <=> $a->equipoJugador();
+            }
+        );
+        return $jugadoresPorEquipo;
+    }
 
-
-
-
-
-
-
-
-
+    function alturaPromedio($jugadores)
+    {
+        $alturaPorEquipo = [];
+        foreach ($jugadores as $jugador)
+        {
+            $equipo = $jugador->equipoJugador();
+            if (!isset($alturaPorEquipo[$equipo]))
+            {
+                $alturaPorEquipo[$equipo] = ['totalAltura' => 0, 'cantidad' => 0];
+            }
+            $alturaPorEquipo[$equipo]['totalAltura']=$alturaPorEquipo[$equipo]['totalAltura'] + $jugador->alturaJugador();
+            $alturaPorEquipo[$equipo]['cantidad']++;
+        }
+        $promedios = [];
+        foreach ($alturaPorEquipo as $equipo => $valores) {
+            $promedios[$equipo] = $valores['totalAltura'] / $valores['cantidad'];
+        }
+        return $promedios;
+    }
+       
+      
     $masalto=[];
     $masAlto=JugadorMasAlto($jugadores);
     $rep=count($masAlto);
@@ -114,4 +138,8 @@
         echo "Jugador: ".$masPuntos[$cuenta]->nombreJugador()."--> Puntaje Total: ".$masPuntos[$cuenta]->puntosTotalesJugador()."\n";
         $cuenta++;
     }
+
+    $altpromed=alturaPromedio($jugadores);
+    print_r($altpromed);
+    
 ?>
