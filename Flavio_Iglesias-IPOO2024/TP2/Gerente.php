@@ -1,12 +1,12 @@
 <?php
 
-require "Empleado.php";
+require_once "./empleado.php";
 
 class Gerente extends Empleado {
-    private $cant_empleados;
+    protected $cant_empleados;
 
-    public function __construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$valor_dia,$cant_empleados) {
-        parent::__construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$valor_dia);
+    public function __construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$cant_empleados) {
+        parent::__construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio);
         $this->cant_empleados = $cant_empleados;
     }
     
@@ -18,27 +18,23 @@ class Gerente extends Empleado {
         return $this->cant_empleados;
     }
 
-    protected function calcularSueldo (int $cantDias) :float {
-        if ($cantDias<0 or $cantDias>30) {
-            return false;
-        }
-        $antiguedad = $this->calcularAntiguedad();
+    public function calcularSueldo (int $cantDias) :float {        
         $empleados=$this->getCantEmpleados();
-        $sueldo=0.01;
+        $sueld=0.01;
         $sueldo_diario = $this->getValorDia();
+        $this->setValorDia($sueldo_diario*1.45);
         if ($empleados>20) {
-            $sueldo_diario=$sueldo_diario*(1+((45+25)/100));
+            $incremento=25;
+        } elseif ($empleados>10) {
+            $incremento=17;
+        } elseif ($empleados>4) {
+            $incremento=10;
+        } else {
+            $incremento=0.00;
         }
-        elseif ($empleados>10) {
-            $sueldo_diario=$sueldo_diario*(1+((45+17)/100));
-        }
-        elseif ($empleados>4) {
-            $sueldo_diario=$sueldo_diario*(1+((45+10)/100));
-        }
-        else {
-            $sueldo_diario=$sueldo_diario*(1+((45)/100));
-        }
-        $sueldo=$cantDias*$sueldo_diario*(1+($antiguedad/100));
-        return $sueldo;
+        $sueld=parent::calcularSueldo($cantDias)*(1+$incremento/100);
+        $sueld=round($sueld,2);
+        $this->setValorDia($sueldo_diario);
+        return $sueld;
     }
 }

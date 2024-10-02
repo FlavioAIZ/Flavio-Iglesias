@@ -1,11 +1,13 @@
 <?php
-    require 'Empleado.php';
+    require_once "./empleado.php";
+    
+    
 
     class Administrativo extends Empleado {
         private $area;
-    
-        public function __construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$valor_dia,$area) {
-            parent::__construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$valor_dia);
+        
+        public function __construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio,$area) {
+            parent::__construct($nombre_apellido,$nro_empleado,$dni,$fecha_inicio);
             $this-> area = $area;                    
         }
 
@@ -16,26 +18,22 @@
         public function getArea() :string {
             return $this->area;
         }
-        
-        protected function calcularSueldo (int $cantDias) :float {
-            if ($cantDias<0 or $cantDias>30) {
-                return false;
+            
+        public function calcularSueldo (int $cantDias) :float {
+            $sector=array("Ventas"=>0.15,"Tesoreria"=>0.20,"Tesorería"=>0.20,"Recursos Humanos"=>0.10);
+            $sueld=0.01;
+            $zona=$this->getArea();
+            $sueldo_diario = $this->getValorDia()+0.00;
+            if (array_key_exists($zona, $sector)) {
+                $incremento=$sector[$zona];
+            } else {
+                $incremento=0;
             }
-            $sector=$this->getArea();
-            $antiguedad = $this->calcularAntiguedad();
-            $sueldo=0.01;
-            $sueldo_diario = $this->getValorDia();
-            if ($sector=='Ventas') {
-                $sueldo_diario=$sueldo_diario*1.15;
-            }
-            elseif ($sector=='Tesorería') {
-                $sueldo_diario=$sueldo_diario*1.20;
-            }
-            elseif ($sector=='Recursos Humanos') {
-                $sueldo_diario=$sueldo_diario*1.10;
-            }
-            $sueldo=$cantDias*$sueldo_diario*(1+($antiguedad/100));
-            return $sueldo;
+            $this->setValorDia($sueldo_diario*(1+$incremento));            
+            $sueld=(parent::calcularSueldo($cantDias));
+            $sueld=round($sueld,2);
+            $this->setValorDia($sueldo_diario);
+            return $sueld;
         }
     }
 ?>
