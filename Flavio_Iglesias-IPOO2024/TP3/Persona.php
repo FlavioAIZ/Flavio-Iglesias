@@ -1,4 +1,4 @@
-><?php 
+<?php
 
 declare(strict_types=1);
 
@@ -17,7 +17,7 @@ class Persona {
 		return $this->dni;
 	}
 
-	public function getNombre() :string {
+	public function getNombreCompleto() :string {
 		return $this->nombre_completo;
 	}
 

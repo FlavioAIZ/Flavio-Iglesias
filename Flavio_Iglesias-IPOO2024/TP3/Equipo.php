@@ -1,16 +1,16 @@
 <?php
 
 declare(strict_types=1);
-require_once __DIR__ . "./Jugador.php";
+require_once __DIR__ . "/Jugador.php";
 
 class Equipo {
-    private array $plantel_jugadores=[];
-    private array $errores=[];
+    protected array $plantel_jugadores=[];
+    public array $Errores=[];
     private string $nombre;
     private string $ciudad;
     private int $partidos_jugados;
     private int $partidos_ganados;
-    public int $maximoNumeroJugadores=10;
+    const maximoNumeroJugadores=10;
     
 	public function __construct($nombre,$ciudad,$partidos_jugados,$partidos_ganados)
     {
@@ -19,10 +19,7 @@ class Equipo {
 		$this-> partidos_jugados = $partidos_jugados;
 		$this-> partidos_ganados = $partidos_ganados;
 
-        $this-> plantel_jugadores = [];
-        $this-> errores=[];
-
-        $this-> maximoNumeroJugadores=10;
+        $this-> plantel_jugadores = [];       
 	}
 
 	public function getNombre() :string
@@ -72,19 +69,23 @@ class Equipo {
 
     public function hayLugar(Equipo $equipo) :bool
     {
-        if (count($equipo->getPlantelJugadores())<$equipo->maximoNumeroJugadores)
+        if (count($equipo->plantel_jugadores)<self::maximoNumeroJugadores)
         {
             return true;
         } 
+        self::marcarError('No hay diponibilidad para agregar un nuevo jugador en el equipo '.$equipo.'.'); 
         return false;        
     }
 
     public function perteneceAlEquipo(Jugador $jugador,Equipo $equipo) :bool
     {
+        $jug=$jugador->getNombreCompleto();
+        $equi=$equipo->getNombre();
         if ($jugador->getEquipo()==$equipo)
         {
             return true;
         }
+        self::marcarError('El jugador '.$jug.' no pertence al equipo '.$equi.'.'); 
         return false;
     }
 
@@ -98,14 +99,23 @@ class Equipo {
                 return true;
             }
         }
+        $nombreJugador=$jugador->getNombreCompleto();
+        $nombreEquipo=$this->nombre;
+        self::marcarError('El jugador '.$nombreJugador.' no es parte del plantel del equipo '.$nombreEquipo.'.'); 
         return false;
     }
 
-    public function addJugador(Jugador $jugador,Equipo $equipo) :void
+    public function getJugadores()
     {
-        if ($equipo->hayLugar($equipo) and $equipo->perteneceAlEquipo($jugador,$equipo) and !$equipo->estaEnPlantel($jugador, $equipo))
+        return $this->plantel_jugadores;
+    }
+
+    public function addJugador(Jugador $jugador) :void
+    {
+        $equipoActual=$jugador->getEquipo();
+        if (self::hayLugar($equipoActual) and $equipoActual->perteneceAlEquipo($jugador,$equipoActual) and !$equipoActual->estaEnPlantel($jugador, $equipoActual))
         {
-            $equipo->plantel_jugadores[]=$jugador;
+            $this->plantel_jugadores[]=$jugador;
         }
     }
     
@@ -114,26 +124,73 @@ class Equipo {
         $posicion=0;
         foreach ($this->plantel_jugadores as $jugador)
         {
-            $jugadorActual=$this->plantel_jugadores[$posicion];
-            if ($jugadorActual->DNI==$DNI)
+            if ($jugador->getDNI()==$DNI)
             {
-                unset($plantel_jugadores[$posicion]);
-            } else
+                unset($this->plantel_jugadores[$posicion]);
+                return;
+            } 
+        }
+        self::marcarError('El jugador con DNI:'.$DNI.' no es parte del plantel del equipo.'); 
+    }
+
+    public function posicionPlantel (int $DNI) :int
+    {
+        $posicion=0;
+        foreach ($this->plantel_jugadores as $jugador)
+        {
+            if (isset($this->plantel_jugadores[$posicion]))
             {
-                $posicion+=1;
+                $jugadorActual=self::getPlantelJugadores()[$posicion];
+                if ($jugadorActual->getDNI()==$jugador->dni)
+                {
+                    return $posicion;
+                } 
             }
+        }
+        return $posicion+1;
+    }
+    
+    public function reemplazarJugador(int $dni, Jugador $new_jugador) :void
+    {
+        $posicionPlantel=self::posicionPlantel($dni);
+        $jugadorSale=self::getPlantelJugadores()[$posicionPlantel];
+        $jugadorEntra=$new_jugador->getNombreCompleto();
+        $equipo=$jugadorSale->getEquipo();
+        if ($posicionPlantel==self::maximoNumeroJugadores+1) 
+        {
+            self::marcarError('El jugador '.$jugadorEntra.' no es parte del plantel del equipo '.$this->nombre.'.');            
+        } elseif (self::perteneceAlEquipo($new_jugador,$equipo))
+        {
+            $this->plantel_jugadores[$posicionPlantel]=$new_jugador;
+        } else
+        {
+            self::marcarError('El jugador '.$jugadorEntra.' no pertenece al equipo '.$this->nombre.'.');            
         }
     }
 
-    public function posicionPlantel (Jugador $jugador, Equipo $equipo)
+    public function marcarError(string $mensaje) :void
     {
-
-    }
-    
-    public function reemplazarJugador(Jugador $jugadorSale, Jugador $jugadorEntra, Equipo $equipo) :void
-    {
-
+        $this->Errores[]=$mensaje;
     }
 
+    public function mostrarErrores() :void
+    {
+        for ($N=0;$N<count(self::$Errores);$N++)
+        {
+            echo self::$Errores[$N].PHP_EOL;
+        }
+    }
 
+    public function getEquipoxDNI(int $dni) :Equipo
+    {
+        foreach ($this->getPlantelJugadores() as $jugador)
+        {
+            if ($jugador->getDNI()==$dni)
+            {
+                $equi=($jugador->getEquipo());                
+            }
+        }
+    return $equi;
+    }
 }
+?>
