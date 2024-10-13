@@ -20,7 +20,6 @@ class Gerente extends Empleado {
 
     public function calcularSueldo (int $cantDias) :float {        
         $empleados=$this->getCantEmpleados();
-        $sueld=0.01;
         $sueldo_diario = $this->getValorDia();
         $this->setValorDia($sueldo_diario*1.45);
         if ($empleados>20) {
@@ -30,10 +29,9 @@ class Gerente extends Empleado {
         } elseif ($empleados>4) {
             $incremento=10;
         } else {
-            $incremento=0.00;
+            $incremento=0;
         }
         $sueld=parent::calcularSueldo($cantDias)*(1+$incremento/100);
-        $sueld=round($sueld,2);
         $this->setValorDia($sueldo_diario);
         return $sueld;
     }

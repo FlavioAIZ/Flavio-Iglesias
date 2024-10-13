@@ -1,0 +1,18 @@
+<?php
+
+class errores 
+{
+    public int $codigoError;
+    public string $descripcionError
+
+    public function __construct(int $codigoError,string $descripcionError)
+    {
+        this->codigoError = $codigoError;
+        this->descripcionError = $descripcionError;
+    }
+
+    
+    {
+        
+    }
+}

@@ -21,9 +21,8 @@
             
         public function calcularSueldo (int $cantDias) :float {
             $sector=array("Ventas"=>0.15,"Tesoreria"=>0.20,"Tesorería"=>0.20,"Recursos Humanos"=>0.10);
-            $sueld=0.01;
             $zona=$this->getArea();
-            $sueldo_diario = $this->getValorDia()+0.00;
+            $sueldo_diario = $this->getValorDia();
             if (array_key_exists($zona, $sector)) {
                 $incremento=$sector[$zona];
             } else {
@@ -31,7 +30,6 @@
             }
             $this->setValorDia($sueldo_diario*(1+$incremento));            
             $sueld=(parent::calcularSueldo($cantDias));
-            $sueld=round($sueld,2);
             $this->setValorDia($sueldo_diario);
             return $sueld;
         }

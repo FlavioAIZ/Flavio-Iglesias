@@ -1,12 +1,12 @@
 <?php 
     class Empleado {
-        private $nombre_apellido;
-        private $nro_empleado;
-        private $dni=" ";
-        private $fecha_inicio;
-        private $valor_dia = 30000;
+        protected $nombre_apellido;
+        protected $nro_empleado;
+        protected $dni=" ";
+        protected $fecha_inicio;
+        protected $valor_dia = 30000;
 
-        public function __construct($nombre_apellido, $nro_empleado, $dni, $fecha_inicio) {
+        protected function __construct($nombre_apellido, $nro_empleado, $dni, $fecha_inicio) {
             $this-> nombre_apellido = $nombre_apellido;
             $this-> nro_empleado = $nro_empleado; 
             $this-> dni = $dni;
@@ -71,14 +71,14 @@
             return $anio_antiguedad;
         }
 
-        public function calcularSueldo (int $cantDias) :float {
+        protected function calcularSueldo (int $cantDias) :float {
             if ($cantDias<0 or $cantDias>30) {
                 return false;
             }
             $antiguedad=$this->calcularAntiguedad();
             $sueldo_diario = $this->getValorDia();
             $sueldo=$cantDias*$sueldo_diario*(1.00+($antiguedad/100));
-            return $sueldo;
+            return round($sueldo,2);
         }
     }
 ?>
